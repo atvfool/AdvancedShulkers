@@ -1,8 +1,4 @@
-// 
-// Decompiled by Procyon v0.5.36
-// 
-
-package cn.mcrain.advancedshulkerboxes;
+package com.atvfool.advancedshulkers;
 
 import java.util.Iterator;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -16,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.block.ShulkerBox;
+import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.event.block.Action;
@@ -26,11 +23,11 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class AdvancedShulkerboxes extends JavaPlugin implements Listener
+public class Main extends JavaPlugin implements Listener
 {
     private BukkitTask timeTask;
     
-    public AdvancedShulkerboxes() {
+    public Main() {
         this.timeTask = null;
     }
     
@@ -39,7 +36,7 @@ public class AdvancedShulkerboxes extends JavaPlugin implements Listener
         this.timeTask = this.getServer().getScheduler().runTaskTimer((Plugin)this, (Runnable)new Runnable() {
             @Override
             public void run() {
-                AdvancedShulkerboxes.this.CheckHandShulker();
+            	Main.this.CheckHandShulker();
             }
         }, 2L, 2L);
     }
@@ -50,10 +47,10 @@ public class AdvancedShulkerboxes extends JavaPlugin implements Listener
     
     @EventHandler(priority = EventPriority.LOW)
     public void GameClick(final PlayerInteractEvent e) {
-        if ((e.getAction() == Action.RIGHT_CLICK_AIR || (!e.isCancelled() && e.getHand() == EquipmentSlot.HAND && e.getAction() == Action.RIGHT_CLICK_BLOCK)) && !e.getPlayer().isSneaking() && e.getPlayer().getEquipment().getItemInMainHand() != null && this.isShulkerBox(e.getPlayer().getEquipment().getItemInMainHand().getTypeId()) && e.getPlayer().hasPermission("advancedshulkerboxes.use")) {
+        if ((e.getAction() == Action.RIGHT_CLICK_AIR || (!e.isCancelled() && e.getHand() == EquipmentSlot.HAND && e.getAction() == Action.RIGHT_CLICK_BLOCK)) && !e.getPlayer().isSneaking() && e.getPlayer().getEquipment().getItemInMainHand() != null && this.isShulkerBox(e.getPlayer().getEquipment().getItemInMainHand().getType().getId()) && e.getPlayer().hasPermission("advancedshulkerboxes.use")) {
             final BlockStateMeta im = (BlockStateMeta)e.getPlayer().getEquipment().getItemInMainHand().getItemMeta();
             final ShulkerBox shulker = (ShulkerBox)im.getBlockState();
-            final Inventory inv = Bukkit.createInventory((InventoryHolder)null, 27, "§rShulker Box");
+            final Inventory inv = Bukkit.createInventory((InventoryHolder)null, 27, "�rShulker Box");
             inv.setContents(shulker.getInventory().getContents());
             e.getPlayer().openInventory(inv);
             e.setCancelled(true);
@@ -62,14 +59,14 @@ public class AdvancedShulkerboxes extends JavaPlugin implements Listener
     
     @EventHandler(priority = EventPriority.LOW)
     public void InvClick(final InventoryClickEvent e) {
-        if (e.getInventory().getName().equals("§rShulker Box")) {
-            if (!this.isShulkerBox(e.getWhoClicked().getEquipment().getItemInMainHand().getTypeId())) {
+        if (((Inventory) e.getInventory()).getType().equals(((Inventory)e.getInventory()).getType().SHULKER_BOX)) {
+            if (!this.isShulkerBox(e.getWhoClicked().getEquipment().getItemInMainHand().getType().getId())) {
                 e.setCancelled(true);
                 e.getWhoClicked().closeInventory();
                 ((Player)e.getWhoClicked()).updateInventory();
                 return;
             }
-            if (e.getClickedInventory() != null && ((e.getClickedInventory().getType() == InventoryType.PLAYER && ((e.getSlot() != -999 && e.getSlot() == e.getWhoClicked().getInventory().getHeldItemSlot()) || (e.isShiftClick() && e.getWhoClicked().getInventory().getItem(e.getSlot()) != null && this.isShulkerBox(e.getWhoClicked().getInventory().getItem(e.getSlot()).getTypeId())))) || (e.getClickedInventory().getType() == InventoryType.CHEST && e.getCursor() != null && this.isShulkerBox(e.getCursor().getTypeId())) || (e.getHotbarButton() != -1 && e.getWhoClicked().getInventory().getItem(e.getHotbarButton()) != null && (e.getHotbarButton() == e.getWhoClicked().getInventory().getHeldItemSlot() || (e.getClickedInventory().getType() == InventoryType.CHEST && this.isShulkerBox(e.getWhoClicked().getInventory().getItem(e.getHotbarButton()).getTypeId())))))) {
+            if (e.getClickedInventory() != null && ((e.getClickedInventory().getType() == InventoryType.PLAYER && ((e.getSlot() != -999 && e.getSlot() == e.getWhoClicked().getInventory().getHeldItemSlot()) || (e.isShiftClick() && e.getWhoClicked().getInventory().getItem(e.getSlot()) != null && this.isShulkerBox(e.getWhoClicked().getInventory().getItem(e.getSlot()).getType().getId())))) || (e.getClickedInventory().getType() == InventoryType.CHEST && e.getCursor() != null && this.isShulkerBox(e.getCursor().getType().getId())) || (e.getHotbarButton() != -1 && e.getWhoClicked().getInventory().getItem(e.getHotbarButton()) != null && (e.getHotbarButton() == e.getWhoClicked().getInventory().getHeldItemSlot() || (e.getClickedInventory().getType() == InventoryType.CHEST && this.isShulkerBox(e.getWhoClicked().getInventory().getItem(e.getHotbarButton()).getType().getId())))))) {
                 e.setCancelled(true);
                 return;
             }
@@ -83,7 +80,7 @@ public class AdvancedShulkerboxes extends JavaPlugin implements Listener
     
     @EventHandler(priority = EventPriority.LOW)
     public void InvClose(final InventoryCloseEvent e) {
-        if (e.getInventory().getName().equals("§rShulker Box") && e.getPlayer().getEquipment().getItemInMainHand() != null && this.isShulkerBox(e.getPlayer().getEquipment().getItemInMainHand().getTypeId())) {
+        if (((Inventory) e.getInventory()).getType().equals(((Inventory)e.getInventory()).getType().SHULKER_BOX) && e.getPlayer().getEquipment().getItemInMainHand() != null && this.isShulkerBox(e.getPlayer().getEquipment().getItemInMainHand().getType().getId())) {
             final BlockStateMeta im = (BlockStateMeta)e.getPlayer().getEquipment().getItemInMainHand().getItemMeta();
             final ShulkerBox shulker = (ShulkerBox)im.getBlockState();
             shulker.getInventory().setContents(e.getInventory().getContents());
@@ -93,13 +90,13 @@ public class AdvancedShulkerboxes extends JavaPlugin implements Listener
     }
     
     public boolean isShulkerBox(final Integer id) {
-        return id > 218 && id < 235;
+    	return id > 218 && id < 235;
     }
     
     public void CheckHandShulker() {
         for (final Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getOpenInventory() != null && player.getOpenInventory().getType() == InventoryType.CHEST && player.getOpenInventory().getTitle().equals("§rShulker Box")) {
-                if (!this.isShulkerBox(player.getEquipment().getItemInMainHand().getTypeId())) {
+            if (player.getOpenInventory() != null && player.getOpenInventory().getType() == InventoryType.CHEST && player.getOpenInventory().getTitle().equals("�rShulker Box")) {
+                if (!this.isShulkerBox(player.getEquipment().getItemInMainHand().getType().getId())) {
                     player.closeInventory();
                 }
                 else {

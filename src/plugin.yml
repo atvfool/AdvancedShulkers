@@ -1,0 +1,6 @@
+main: com.atvfool.advancedshulkers.Main
+name: AdvancedShulkers
+version: 1.0
+author: me
+description: An Example plugin
+commands:
